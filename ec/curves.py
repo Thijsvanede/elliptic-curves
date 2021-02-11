@@ -1,4 +1,4 @@
-from points import Point
+from ec.points import Point
 
 class Curve(object):
     """Defines a curve as y² = x³ + a*x + b (mod n)."""
