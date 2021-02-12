@@ -1,4 +1,5 @@
 from ec.points import Point
+import warnings
 
 class Curve(object):
     """Defines a curve as y² = x³ + a*x + b (mod n)."""
@@ -69,6 +70,70 @@ class Curve(object):
 
         # Return point
         return point
+
+    ########################################################################
+    #                       Get coordinates on curve                       #
+    ########################################################################
+
+    def get_coordinate_y(self, x):
+        """Compute the y coordinates for a given value of x
+
+            Parameters
+            ----------
+            x : float
+                x-coordinate to compute y.
+
+            Returns
+            -------
+            y2 : float
+                Value of y²
+
+            y : 2-tuple of float
+                All possible y-coordinates corresponding to x.
+            """
+        # Compute y² using the right hand side of the formula
+        y2 = pow(x, 3, self.n) + self.a*x + self.b
+
+        # Case where we are in a modular group
+        if self.n:
+            # Ensure we are in the group
+            y2 %= self.n
+
+            # Case where n = 3 mod 4
+            if self.n % 4 == 3:
+                # Compute modular residue using Fermat's little theorem
+                sqrt = pow(y2, (self.n+1)//4, self.n)
+                # Return result
+                return y2, (sqrt, self.n - sqrt)
+            else:
+                # Computing modular residue in case where n ≢ 3 mod 4 is hard
+                warnings.warn(
+                    "Computing the quadratic residue of n, where n ≢ 3 mod 4 is"
+                    " hard. Returning y², (None, None)."
+                )
+                # Only return y²
+                return y2, (None, None)
+        else:
+            # Compute the square root
+            sqrt = math.sqrt(y2)
+            # Return square, and both roots
+            return y2, (sqrt, -sqrt)
+
+
+    def get_coordinate_x(self, y):
+        """Compute the x coordinates for a given value of y
+
+            Parameters
+            ----------
+            y : float
+                y-coordinate to compute x.
+
+            Returns
+            -------
+            x : float
+                x-coordinate corresponding to y.
+            """
+        raise NotImplementedError("Retrieving x is computationally hard.")
 
     ########################################################################
     #                            Object methods                            #
