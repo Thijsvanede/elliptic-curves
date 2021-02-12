@@ -92,19 +92,21 @@ class Curve(object):
                 All possible y-coordinates corresponding to x.
             """
         # Compute y² using the right hand side of the formula
+        # y² = x³ + a*x + b (mod n)
         y2 = pow(x, 3, self.n) + self.a*x + self.b
 
         # Case where we are in a modular group
         if self.n:
-            # Ensure we are in the group
+            # Ensure we are in the group (mod n)
             y2 %= self.n
 
-            # Case where n = 3 mod 4
+            # Case where n ≡ 3 mod 4
             if self.n % 4 == 3:
                 # Compute modular residue using Fermat's little theorem
-                sqrt = pow(y2, (self.n+1)//4, self.n)
-                # Return result
-                return y2, (sqrt, self.n - sqrt)
+                residue = pow(y2, (self.n+1)//4, self.n)
+                # Return square, and both roots
+                return y2, (residue, self.n - residue)
+            # Case where n ≢ 3 mod 4
             else:
                 # Computing modular residue in case where n ≢ 3 mod 4 is hard
                 warnings.warn(
@@ -113,6 +115,8 @@ class Curve(object):
                 )
                 # Only return y²
                 return y2, (None, None)
+
+        # Case where we are not in a modular group is simply the square root
         else:
             # Compute the square root
             sqrt = math.sqrt(y2)
