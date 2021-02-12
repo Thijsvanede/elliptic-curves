@@ -3,7 +3,7 @@ from points import Point
 
 if __name__ == "__main__":
     curve = Curve(
-        a = 497,
+        a =  497,
         b = 1768,
         n = 9739,
     )
@@ -27,3 +27,12 @@ if __name__ == "__main__":
     S  = 1829*Qa
     from hashlib import sha1
     print(sha1(str(S.x).encode('utf-8')).hexdigest())
+
+    # Compute coordinates
+    x = 4726
+    y2, (ya, yb) = curve.get_coordinate_y(x)
+    p1 = curve.point(x, ya)
+    p2 = curve.point(x, yb)
+
+    S1 = 6534*p1
+    S2 = 6534*p2
